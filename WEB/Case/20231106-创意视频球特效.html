@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创意视频球特效</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      overflow: hidden;
+      /* 隐藏页面的滚动条 */
+    }
+
+    section {
+      position: absolute;
+      /* 绝对定位 */
+      top: -100px;
+      left: -100px;
+      right: -100px;
+      bottom: -100px;
+      display: flex;
+      /* 使用弹性布局 */
+      justify-content: center;
+      /* 水平居中对齐 */
+      align-items: center;
+      /* 垂直居中对齐 */
+    }
+
+    section video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* 使用 cover 填充视频 */
+      filter: blur(35px);
+      /* 添加模糊效果 */
+    }
+
+    section .sphere {
+      position: relative;
+      /* 相对定位 */
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      z-index: 10;
+    }
+
+    section .sphere::before {
+      content: "";
+      /* 伪元素内容为空 */
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      border-radius: 50%;
+      box-shadow: inset 0 100px 100px rgba(255, 255, 255, 0.5),
+        /* 内阴影效果 */
+        inset 0 -100px 100px rgba(0, 0, 0, 1),
+        inset 0 0 100px rgba(0, 0, 0, 1);
+    }
+
+    section .sphere::after {
+      content: "";
+      position: absolute;
+      top: 550px;
+      left: -50px;
+      width: 700px;
+      height: 100px;
+      z-index: -1;
+      border-radius: 50%;
+      background: black;
+      background: radial-gradient(black, transparent, transparent);
+      /* 底部渐变效果 */
+    }
+
+    section .sphere video {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      object-fit: cover;
+      border-radius: 50%;
+      filter: blur(0);
+      /* 取消模糊效果 */
+    }
+
+    section .controls {
+      /* background-color: aqua; */
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+    }
+
+    section .controls button {
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      color: white;
+      font-size: 20px;
+      margin-right: 10px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    section .controls input[type="range"] {
+      width: 800px;
+      margin-right: 10px;
+    }
+
+    section .controls span {
+      color: white;
+      font-size: 18px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+  </style>
+</head>
+
+<body>
+  <section>
+    <video id="backgroundVideo" src="../Videos/1-“挑 战 B 站 画 质 上 限”-4K 超清-AVC.mp4"></video>
+    <div class="sphere">
+      <video id="sphereVideo" src="../Videos/1-“挑 战 B 站 画 质 上 限”-4K 超清-AVC.mp4"></video>
+    </div>
+    <div class="controls">
+      <button id="playPauseButton">播放</button>
+      <input type="range" id="progressBar" min="0" step="0.001">
+      <span id="currentTime">00:00</span>&nbsp;
+      <span>/</span>&nbsp;
+      <span id="duration">00:00</span>
+    </div>
+  </section>
+
+  <script>
+    // 等待文档加载完成后执行
+    document.addEventListener("DOMContentLoaded", function () {
+      // 获取视频元素和控制按钮
+      var backgroundVideo = document.getElementById("backgroundVideo"); // 背景视频元素
+      var sphereVideo = document.getElementById("sphereVideo"); // 球形视频元素
+      var playPauseButton = document.getElementById("playPauseButton"); // 播放/暂停按钮
+      var progressBar = document.getElementById("progressBar"); // 进度条
+      var currentTime = document.getElementById("currentTime"); // 当前时间
+      var duration = document.getElementById("duration"); // 视频总时长
+
+      // 初始状态下暂停视频
+      backgroundVideo.pause();
+      sphereVideo.pause();
+
+      // 设置进度条初始值为0
+      progressBar.value = 0;
+
+      // // 在视频加载完成后获取最后一帧的画面并显示在视频元素上
+      // backgroundVideo.addEventListener("loadeddata", function () {
+      //   backgroundVideo.currentTime = backgroundVideo.duration; // 将视频播放位置设置为最后一帧
+      //   backgroundVideo.pause(); // 暂停视频
+      //   sphereVideo.currentTime = backgroundVideo.duration; // 将球形视频播放位置设置为最后一帧
+      //   sphereVideo.pause(); // 暂停球形视频
+      // });
+
+      // 播放/暂停按钮点击事件
+      playPauseButton.addEventListener("click", function () {
+        if (backgroundVideo.paused) {
+          // 如果背景视频暂停，则播放背景视频和球形视频
+          backgroundVideo.play();
+          sphereVideo.play();
+          playPauseButton.textContent = "暂停"; // 更新按钮文本为"暂停"
+        } else {
+          // 如果背景视频正在播放，则暂停背景视频和球形视频
+          backgroundVideo.pause();
+          sphereVideo.pause();
+          playPauseButton.textContent = "播放"; // 更新按钮文本为"播放"
+        }
+      });
+
+      // 更新进度条和当前时间
+      backgroundVideo.addEventListener("timeupdate", function () {
+        // 计算视频播放进度（百分比）
+        var progress = (backgroundVideo.currentTime / backgroundVideo.duration) * 100;
+        progressBar.value = progress; // 更新进度条的值
+        currentTime.textContent = formatTime(backgroundVideo.currentTime); // 更新当前时间显示
+      });
+
+      // 改变视频播放位置
+      progressBar.addEventListener("input", function () {
+        // 计算进度条对应的视频播放时间
+        var progressTime = (progressBar.value / 100) * backgroundVideo.duration;
+        // 设置背景视频和球形视频的当前播放时间
+        backgroundVideo.currentTime = progressTime;
+        sphereVideo.currentTime = progressTime;
+        currentTime.textContent = formatTime(progressTime); // 更新当前时间显示
+      });
+
+      // 将时间格式化为 mm:ss 格式
+      function formatTime(time) {
+        var minutes = Math.floor(time / 60); // 计算分钟数
+        var seconds = Math.floor(time % 60); // 计算秒数
+        // 格式化为 mm:ss 格式，并在分钟数或秒数小于10时添加前导零
+        return (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+      }
+
+      // 更新视频总时长
+      backgroundVideo.addEventListener("loadedmetadata", function () {
+        duration.textContent = formatTime(backgroundVideo.duration); // 更新视频总时长显示
+      });
+
+      // 监听视频播放完毕事件
+      backgroundVideo.addEventListener("ended", function () {
+        // 在视频播放完毕后执行的操作
+        playPauseButton.textContent = "播放"; // 更新按钮文本为"播放"
+        progressBar.value = 0; // 重置进度条的值
+        currentTime.textContent = "00:00"; // 重置当前时间显示
+      });
+    });
+  </script>
+</body>
+
+</html>

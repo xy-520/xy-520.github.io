@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>走马灯</title>
+  <style>
+    /* 设置页面的默认边距和内边距为0 */
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 移除列表项的默认样式，去掉默认的圆点标记 */
+    li {
+      list-style: none;
+    }
+
+    .box {
+      width: 721.2px;
+      height: 135.2px;
+      border: 5px solid black;
+      margin: 300px auto;
+      overflow: hidden;
+    }
+
+    .box ul li img {
+      height: 135.2px;
+      width: 240.4px;
+    }
+
+    .box ul {
+      width: 1923.2px;
+      /* 设置动画效果：move，持续时间为5秒，线性过渡，无限循环播放 */
+      animation: move 5s linear infinite;
+    }
+
+    /* 图片列表项样式，使图像以水平方向浮动排列 */
+    .box ul li {
+      float: left;
+    }
+
+    @keyframes move {
+      to {
+        /* 图片列表项向左平移1202px，实现走马灯效果 */
+        transform: translateX(-1202px);
+      }
+    }
+
+    /* 鼠标悬停时暂停动画 */
+    .box:hover ul {
+      animation-play-state: paused;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <ul>
+      <li><img src="../images/10.jpg" alt=""></li>
+      <li><img src="../images/11.jpg" alt=""></li>
+      <li><img src="../images/12.jpg" alt=""></li>
+      <li><img src="../images/13.jpg" alt=""></li>
+      <li><img src="../images/14.jpg" alt=""></li>
+
+      <li><img src="../images/10.jpg" alt=""></li>
+      <li><img src="../images/11.jpg" alt=""></li>
+      <li><img src="../images/12.jpg" alt=""></li>
+    </ul>
+  </div>
+</body>
+
+</html>
